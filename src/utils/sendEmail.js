@@ -9,15 +9,19 @@ const sendEmail = async ({ to, subject, html }) => {
       html,
     });
 
-    console.log("✅ Email Sent:", info.messageId);
+    console.log("✅ Email Sent:", info);
 
     return info;
   } catch (error) {
     console.error("========== EMAIL ERROR ==========");
     console.error(error);
-    console.error("================================");
+    console.error("Message:", error.message);
+    console.error("Code:", error.code);
+    console.error("Response:", error.response);
+    console.error("Response Code:", error.responseCode);
+    console.error("===============================");
 
-    throw new Error(error.message);
+    throw error; // IMPORTANT
   }
 };
 

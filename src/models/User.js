@@ -7,13 +7,13 @@ const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true,
+      required: [true, "Name is required"],
       trim: true,
     },
 
     email: {
       type: String,
-      required: true,
+      required: [true, "Email is required"],
       unique: true,
       lowercase: true,
       trim: true,
@@ -21,12 +21,15 @@ const userSchema = new mongoose.Schema(
 
     password: {
       type: String,
-      required: true,
+      required: [true, "Password is required"],
       minlength: 6,
       select: false,
     },
 
-    // Forgot Password
+    // ===============================
+    // Forgot Password Fields
+    // ===============================
+
     passwordResetToken: {
       type: String,
       default: null,
@@ -42,26 +45,30 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-// ===============================
-// Hash Password
-// ===============================
-userSchema.pre("save", async function () {
-  if (!this.isModified("password")) return;
+// ===================================
+// Hash Password Before Save
+// ===================================
 
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) {
+    return;
+  }
+
+  this.password = await bcrypt.hash(this.password, 10);
 });
 
-// ===============================
+// ===================================
 // Compare Password
-// ===============================
+// ===================================
+
 userSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-// ===============================
-// Generate JWT
-// ===============================
+// ===================================
+// Generate JWT Token
+// ===================================
+
 userSchema.methods.generateToken = function () {
   return jwt.sign(
     {
@@ -69,27 +76,29 @@ userSchema.methods.generateToken = function () {
     },
     process.env.JWT_SECRET,
     {
-      expiresIn: process.env.JWT_EXPIRE || "7d",
+      expiresIn: process.env.JWT_EXPIRE,
     }
   );
 };
 
-// ===============================
-// Generate Reset Password Token
-// ===============================
+// ===================================
+// Generate Password Reset Token
+// ===================================
+
 userSchema.methods.createPasswordResetToken = function () {
-  // Random Token
+  // Generate Random Token
   const resetToken = crypto.randomBytes(32).toString("hex");
 
-  // Save Hashed Token
+  // Save Hashed Token in Database
   this.passwordResetToken = crypto
     .createHash("sha256")
     .update(resetToken)
     .digest("hex");
 
-  // Expire after 15 minutes
+  // Token Valid for 15 Minutes
   this.passwordResetExpire = Date.now() + 15 * 60 * 1000;
 
+  // Return Original Token
   return resetToken;
 };
 
