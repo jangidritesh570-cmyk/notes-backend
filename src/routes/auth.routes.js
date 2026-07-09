@@ -5,6 +5,8 @@ import {
   loginUser,
   logoutUser,
   getCurrentUser,
+  forgotPassword,
+  resetPassword,
 } from "../controllers/auth.controller.js";
 
 import protect from "../middleware/auth.middleware.js";
@@ -15,24 +17,26 @@ const router = express.Router();
 // Public Routes
 // ===============================
 
-// Register User
-// POST /api/auth/register
+// Register
 router.post("/register", registerUser);
 
-// Login User
-// POST /api/auth/login
+// Login
 router.post("/login", loginUser);
+
+// Forgot Password
+router.post("/forgot-password", forgotPassword);
+
+// Reset Password
+router.put("/reset-password/:token", resetPassword);
 
 // ===============================
 // Protected Routes
 // ===============================
 
-// Get Current Logged-in User
-// GET /api/auth/me
+// Current User
 router.get("/me", protect, getCurrentUser);
 
-// Logout User
-// POST /api/auth/logout
+// Logout
 router.post("/logout", protect, logoutUser);
 
 export default router;
