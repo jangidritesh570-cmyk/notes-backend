@@ -3,13 +3,10 @@ import nodemailer from "nodemailer";
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "jangidritesh570@gmail.com",
-    pass: "yvjjapinpygpdzsx",
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
   },
-});
-
-transporter.verify((err) => {
-  console.log(err || "SMTP Connected");
+  connectionTimeout: 60000,
 });
 
 export default transporter;
