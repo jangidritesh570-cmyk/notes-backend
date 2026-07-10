@@ -1,13 +1,15 @@
 import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
+  service: "gmail",
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
+    user: "jangidritesh570@gmail.com",
+    pass: "yvjjapinpygpdzsx",
   },
+});
+
+transporter.verify((err) => {
+  console.log(err || "SMTP Connected");
 });
 
 export default transporter;
