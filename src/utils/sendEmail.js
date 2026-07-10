@@ -1,27 +1,23 @@
-import transporter from "../config/nodemailer.js";
+import resend from "../config/resend.js";
 
 const sendEmail = async ({ to, subject, html }) => {
   try {
-    const info = await transporter.sendMail({
-      from: `"Notes App" <${process.env.EMAIL_USER}>`,
+    const response = await resend.emails.send({
+      from: "Notes App <onboarding@resend.dev>",
       to,
       subject,
       html,
     });
 
-    console.log("✅ Email Sent:", info);
+    console.log("✅ Email Sent");
+    console.log(response);
 
-    return info;
+    return response;
   } catch (error) {
-    console.error("========== EMAIL ERROR ==========");
+    console.error("❌ RESEND ERROR");
     console.error(error);
-    console.error("Message:", error.message);
-    console.error("Code:", error.code);
-    console.error("Response:", error.response);
-    console.error("Response Code:", error.responseCode);
-    console.error("===============================");
 
-    throw error; // IMPORTANT
+    throw error;
   }
 };
 

@@ -124,42 +124,40 @@ export const forgotPassword = asyncHandler(async (req, res) => {
     throw new ApiError(404, "User not found");
   }
 
+  // Generate Reset Token
   const resetToken = user.createPasswordResetToken();
 
   await user.save({ validateBeforeSave: false });
 
-  const resetURL =
-    `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
+  const resetURL = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
 
   const html = `
-      <div style="font-family:Arial;padding:30px">
-          <h2>Notes App Password Reset</h2>
+    <div style="font-family:Arial;padding:30px">
+      <h2>Notes App Password Reset</h2>
 
-          <p>Hello <b>${user.name}</b>,</p>
+      <p>Hello <b>${user.name}</b>,</p>
 
-          <p>You requested a password reset.</p>
+      <p>Click the button below to reset your password.</p>
 
-          <a
-              href="${resetURL}"
-              style="
-                background:#2563eb;
-                color:white;
-                padding:12px 20px;
-                border-radius:6px;
-                text-decoration:none;
-                display:inline-block;
-              "
-          >
-              Reset Password
-          </a>
+      <a
+        href="${resetURL}"
+        style="
+          background:#2563eb;
+          color:#fff;
+          padding:12px 22px;
+          border-radius:8px;
+          text-decoration:none;
+          display:inline-block;
+          margin:20px 0;
+        "
+      >
+        Reset Password
+      </a>
 
-          <p style="margin-top:20px">
-            This link will expire in 15 minutes.
-          </p>
+      <p>This link will expire in <b>15 minutes</b>.</p>
 
-          <p>If you didn't request this email,
-          please ignore it.</p>
-      </div>
+      <p>If you didn't request this email, simply ignore it.</p>
+    </div>
   `;
 
   await sendEmail({
@@ -168,7 +166,7 @@ export const forgotPassword = asyncHandler(async (req, res) => {
     html,
   });
 
-  res.status(200).json(
+  return res.status(200).json(
     new ApiResponse(
       200,
       "Password reset email sent successfully"
