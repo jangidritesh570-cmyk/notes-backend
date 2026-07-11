@@ -123,53 +123,77 @@ export const forgotPassword = asyncHandler(async (req, res) => {
   if (!user) {
     throw new ApiError(404, "User not found");
   }
+  
 
-  // Generate Reset Token
   const resetToken = user.createPasswordResetToken();
 
   await user.save({ validateBeforeSave: false });
 
-  const resetURL = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
+  const resetURL =
+    `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
 
   const html = `
-    <div style="font-family:Arial;padding:30px">
-      <h2>Notes App Password Reset</h2>
+  <div style="font-family:Arial;padding:40px;background:#f4f4f4">
+      <div style="max-width:600px;margin:auto;background:#fff;padding:30px;border-radius:12px">
 
-      <p>Hello <b>${user.name}</b>,</p>
+          <h1 style="color:#2563eb">
+              📒 Notes App
+          </h1>
 
-      <p>Click the button below to reset your password.</p>
+          <h2>Hello ${user.name}</h2>
 
-      <a
-        href="${resetURL}"
-        style="
-          background:#2563eb;
-          color:#fff;
-          padding:12px 22px;
-          border-radius:8px;
-          text-decoration:none;
-          display:inline-block;
-          margin:20px 0;
-        "
-      >
-        Reset Password
-      </a>
+          <p>
+              We received a request to reset your password.
+          </p>
 
-      <p>This link will expire in <b>15 minutes</b>.</p>
+          <div style="margin:35px 0">
 
-      <p>If you didn't request this email, simply ignore it.</p>
-    </div>
+              <a
+                  href="${resetURL}"
+                  style="
+                  background:#2563eb;
+                  color:#fff;
+                  padding:15px 28px;
+                  border-radius:8px;
+                  text-decoration:none;
+                  font-weight:bold;
+                  "
+              >
+                  Reset Password
+              </a>
+
+          </div>
+
+          <p>
+              This link will expire in
+              <b>15 minutes.</b>
+          </p>
+
+          <p>
+              If you didn't request this,
+              simply ignore this email.
+          </p>
+
+          <hr>
+
+          <small>
+              © 2026 Notes App
+          </small>
+
+      </div>
+  </div>
   `;
 
   await sendEmail({
     to: user.email,
-    subject: "Reset Password - Notes App",
+    subject: "Reset Your Password - Notes App",
     html,
   });
 
-  return res.status(200).json(
+  res.status(200).json(
     new ApiResponse(
       200,
-      "Password reset email sent successfully"
+      "Password reset link sent successfully."
     )
   );
 });

@@ -1,23 +1,25 @@
-import resend from "../config/resend.js";
+import transporter from "../config/nodemailer.js";
 
 const sendEmail = async ({ to, subject, html }) => {
   try {
-    const response = await resend.emails.send({
-      from: "Notes App <onboarding@resend.dev>",
+    console.log("Sending Email To:", to);
+
+    const info = await transporter.sendMail({
+      from: process.env.EMAIL_FROM,
       to,
       subject,
       html,
     });
 
     console.log("✅ Email Sent");
-    console.log(response);
+    console.log(info);
 
-    return response;
-  } catch (error) {
-    console.error("❌ RESEND ERROR");
-    console.error(error);
+    return info;
+  } catch (err) {
+    console.log("EMAIL ERROR");
+    console.log(err);
 
-    throw error;
+    throw err;
   }
 };
 

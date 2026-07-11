@@ -1,21 +1,27 @@
 import dotenv from "dotenv";
 
-dotenv.config({ path: ".env" });
-
-console.log("EMAIL_USER:", process.env.EMAIL_USER);
-console.log("EMAIL_PASS:", process.env.EMAIL_PASS);
+dotenv.config();
 
 import app from "./app.js";
 import connectDB from "./config/db.js";
 
+// Optional (Debug)
+console.log("SMTP_USER:", process.env.SMTP_USER);
+console.log("SMTP_HOST:", process.env.SMTP_HOST);
+
 const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
-  await connectDB();
+  try {
+    await connectDB();
 
-  app.listen(PORT, () => {
-    console.log(`Server running on ${PORT}`);
-  });
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error("❌ Server Failed to Start");
+    console.error(error);
+  }
 };
 
 startServer();
