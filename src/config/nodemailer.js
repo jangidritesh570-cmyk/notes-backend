@@ -1,4 +1,9 @@
+import "dotenv/config";
 import nodemailer from "nodemailer";
+
+console.log("HOST:", process.env.SMTP_HOST);
+console.log("PORT:", process.env.SMTP_PORT);
+console.log("USER:", process.env.SMTP_USER);
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
@@ -12,10 +17,9 @@ const transporter = nodemailer.createTransport({
 
 transporter.verify((err) => {
   if (err) {
-    console.log("❌ SMTP Error");
     console.log(err);
   } else {
-    console.log("✅ Brevo SMTP Connected");
+    console.log("✅ Brevo Connected");
   }
 });
 
