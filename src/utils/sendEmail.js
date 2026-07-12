@@ -1,37 +1,41 @@
-import apiInstance from "../config/brevo.js";
-import * as brevo from "@getbrevo/brevo";
-
 const sendEmail = async ({ to, subject, html }) => {
   try {
-    console.log("Sending Email To:", to);
-
-    const email = new brevo.SendSmtpEmail();
-
-    email.sender = {
-      name: process.env.EMAIL_FROM_NAME,
-      email: process.env.EMAIL_FROM,
-    };
-
-    email.to = [
-      {
-        email: to,
+    const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        "content-type": "application/json",
+        "api-key": process.env.BREVO_API_KEY,
       },
-    ];
+      body: JSON.stringify({
+        sender: {
+          name: "Notes App",
+          email: process.env.EMAIL_FROM,
+        },
 
-    email.subject = subject;
+        to: [
+          {
+            email: to,
+          },
+        ],
 
-    email.htmlContent = html;
+        subject,
 
-    const response = await apiInstance.sendTransacEmail(email);
+        htmlContent: html,
+      }),
+    });
 
-    console.log("✅ Email Sent Successfully");
-    console.log(response);
+    const data = await response.json();
 
-    return response;
+    console.log(data);
+
+    if (!response.ok) {
+      throw new Error(data.message || "Email failed");
+    }
+
+    return data;
   } catch (err) {
-    console.log("EMAIL ERROR");
     console.log(err);
-
     throw err;
   }
 };
