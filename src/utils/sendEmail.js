@@ -1,20 +1,33 @@
-import transporter from "../config/nodemailer.js";
+import apiInstance from "../config/brevo.js";
+import * as brevo from "@getbrevo/brevo";
 
 const sendEmail = async ({ to, subject, html }) => {
   try {
     console.log("Sending Email To:", to);
 
-    const info = await transporter.sendMail({
-      from: process.env.EMAIL_FROM,
-      to,
-      subject,
-      html,
-    });
+    const email = new brevo.SendSmtpEmail();
 
-    console.log("✅ Email Sent");
-    console.log(info);
+    email.sender = {
+      name: process.env.EMAIL_FROM_NAME,
+      email: process.env.EMAIL_FROM,
+    };
 
-    return info;
+    email.to = [
+      {
+        email: to,
+      },
+    ];
+
+    email.subject = subject;
+
+    email.htmlContent = html;
+
+    const response = await apiInstance.sendTransacEmail(email);
+
+    console.log("✅ Email Sent Successfully");
+    console.log(response);
+
+    return response;
   } catch (err) {
     console.log("EMAIL ERROR");
     console.log(err);
